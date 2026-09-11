@@ -79,6 +79,13 @@ build CMakeFiles/SDL3repo.dir/src/Pong.cpp.obj: CXX_COMPILER__SDL3repo_unscanned
   OBJECT_DIR = CMakeFiles\SDL3repo.dir
   OBJECT_FILE_DIR = CMakeFiles\SDL3repo.dir\src
 
+build CMakeFiles/SDL3repo.dir/src/SpaceDefenders.cpp.obj: CXX_COMPILER__SDL3repo_unscanned_ D$:/User/VSCode/Repos/C++/SDL3repo/src/SpaceDefenders.cpp || cmake_object_order_depends_target_SDL3repo
+  DEP_FILE = CMakeFiles\SDL3repo.dir\src\SpaceDefenders.cpp.obj.d
+  FLAGS = -std=gnu++17
+  INCLUDES = -ID:/User/VSCode/Repos/C++/SDL3repo/include -isystem D:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/include
+  OBJECT_DIR = CMakeFiles\SDL3repo.dir
+  OBJECT_FILE_DIR = CMakeFiles\SDL3repo.dir\src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target SDL3repo
@@ -87,7 +94,7 @@ build CMakeFiles/SDL3repo.dir/src/Pong.cpp.obj: CXX_COMPILER__SDL3repo_unscanned
 #############################################
 # Link the executable SDL3repo.exe
 
-build SDL3repo.exe: CXX_EXECUTABLE_LINKER__SDL3repo_ CMakeFiles/SDL3repo.dir/src/main.cpp.obj CMakeFiles/SDL3repo.dir/src/Launcher.cpp.obj CMakeFiles/SDL3repo.dir/src/GameInfo.cpp.obj CMakeFiles/SDL3repo.dir/src/Utils.cpp.obj CMakeFiles/SDL3repo.dir/src/Pong.cpp.obj | D$:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3_ttf.lib D$:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3.lib
+build SDL3repo.exe: CXX_EXECUTABLE_LINKER__SDL3repo_ CMakeFiles/SDL3repo.dir/src/main.cpp.obj CMakeFiles/SDL3repo.dir/src/Launcher.cpp.obj CMakeFiles/SDL3repo.dir/src/GameInfo.cpp.obj CMakeFiles/SDL3repo.dir/src/Utils.cpp.obj CMakeFiles/SDL3repo.dir/src/Pong.cpp.obj CMakeFiles/SDL3repo.dir/src/SpaceDefenders.cpp.obj | D$:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3_ttf.lib D$:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3.lib
   LINK_LIBRARIES = D:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3_ttf.lib  D:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/debug/lib/SDL3.lib  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\SDL3repo.dir
   POST_BUILD = C:\WINDOWS\system32\cmd.exe /C "cd /D D:\User\VSCode\Repos\C++\SDL3repo\build && D:\User\VSCode\Repos\C++\SDL3repo\vcpkg\vcpkg.exe z-applocal --target-binary=D:/User/VSCode/Repos/C++/SDL3repo/build/SDL3repo.exe --installed-bin-dir=D:/User/VSCode/Repos/C++/SDL3repo/vcpkg/installed/x64-windows/bin"

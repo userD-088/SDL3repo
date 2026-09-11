@@ -191,7 +191,7 @@ void Pong::update()
     }
 }
 
-void Pong::renderText( const char* text, float x, float y, SDL_Color color )
+void Pong::renderText(const char* text, float x, float y, SDL_Color color)
 {
     SDL_Surface* surface = TTF_RenderText_Blended(
         font,

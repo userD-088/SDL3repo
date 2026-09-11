@@ -2,6 +2,7 @@
 #include "const.h"
 #include "Utils.h"
 #include "Pong.h"
+#include "SpaceDefenders.h"
 
 #include <iostream>
 
@@ -15,6 +16,7 @@ Launcher::Launcher(SDL_Window* window, SDL_Renderer* renderer)
 {
     games = {
         {"Pong"},
+        {"Space Defenders"},
         {"..."}
     };
 
@@ -83,6 +85,7 @@ void Launcher::handleEvents()
                     std::cout << "Selected: " << selectedGame + 1 << " " << games[selectedGame].name << '\n';
 
                     if (games[selectedGame].name == "Pong") { Pong pong(window, renderer); pong.run(); }
+                    if (games[selectedGame].name == "Space Defenders") { SpaceDefenders spaceDefenders(window, renderer); spaceDefenders.run(); }
 
                     break;
             }
