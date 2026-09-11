@@ -1,6 +1,5 @@
 #include "SpaceDefenders.h"
 #include "const.h"
-#include "Utils.h"
 
 SpaceDefenders::SpaceDefenders(SDL_Window* window, SDL_Renderer* renderer) {
     this->window = window;

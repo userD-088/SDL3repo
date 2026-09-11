@@ -3,6 +3,9 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
+#include <vector>
+
+#include "Utils.h"
 
 class SpaceDefenders 
 {
@@ -13,8 +16,22 @@ public:
     void run();
 
 private:
+    struct Point { float x; float y; };
 
-    // <-- Game Object Structs
+    struct Planet {
+        Point position;
+        float radius;
+    };
+
+    struct Player {
+        Point figure[3];
+
+        Point position;
+        Point velocity;
+        Point accelaration;
+
+        // More
+    };
 
     void handleEvents();
     void update();
