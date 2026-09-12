@@ -14,3 +14,6 @@
 25	928	8108657725921263	CMakeFiles/SDL3repo.dir/src/Pong.cpp.obj	a0e739ed5042f8e3
 14	992	8108657725815539	CMakeFiles/SDL3repo.dir/src/Launcher.cpp.obj	276c8a4eb3f89aaf
 993	1165	8108657735599620	SDL3repo.exe	32c05aa40e8d90ea
+52	1036	8109135786993163	CMakeFiles/SDL3repo.dir/src/SpaceDefenders.cpp.obj	9be89f653957cd73
+39	1086	8109135786852357	CMakeFiles/SDL3repo.dir/src/Launcher.cpp.obj	276c8a4eb3f89aaf
+1087	1342	8109135797314662	SDL3repo.exe	32c05aa40e8d90ea

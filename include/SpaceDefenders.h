@@ -21,16 +21,28 @@ private:
     struct Planet {
         Point position;
         float radius;
+        float gravityPull;
     };
 
     struct Player {
-        Point figure[3];
+        Point body[3];
 
         Point position;
         Point velocity;
         Point accelaration;
 
         // More
+    };
+
+    struct Asteroid {
+        std::vector<Point> Body;
+
+        Point position;
+        Point velocity;
+        Point acceleration;
+
+        int hp;
+        int damage;
     };
 
     void handleEvents();
