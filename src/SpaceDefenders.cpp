@@ -1,6 +1,10 @@
 #include "SpaceDefenders.h"
 #include "const.h"
 
+#include <array>
+#include <vector>
+#include <iostream>
+
 SpaceDefenders::SpaceDefenders(SDL_Window* window, SDL_Renderer* renderer) {
     this->window = window;
     this->renderer = renderer;
@@ -91,17 +95,19 @@ void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color co
 }
 
 void SpaceDefenders::render() {
-        SDL_SetRenderDrawColor(
-        renderer,
-        0,
-        0,
-        0,
-        255
-    );
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
     SDL_RenderClear(renderer);
 
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
     // Render Objects
+
+    drawCircle(renderer, earth.position.x, earth.position.y, earth.radius);
+
+    drawPolygon(renderer, {100.0f, 200.0f}, {{{0, 30.0f}, {15.0f, 0}, {-15.0f, 0}}});
+
+    drawComplexBody(renderer, {160.0f, 256.0f}, std::vector<Point>{{0, 30.0f}, {15.0f, 0},{20.0f, 5.0f} , {-15.0f, 0}});
 
     SDL_RenderPresent(renderer);
 }

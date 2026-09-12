@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Utils.h"
+#include "const.h"
 
 class SpaceDefenders 
 {
@@ -16,8 +17,6 @@ public:
     void run();
 
 private:
-    struct Point { float x; float y; };
-
     struct Planet {
         Point position;
         float radius;
@@ -60,7 +59,8 @@ private:
         SDL_Color color
     );
 
-    // <-- Game Objects
+    // Game Objects
+    Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 50.0f, 0.1f};
 
     bool running = true;
 };
