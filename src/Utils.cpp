@@ -114,7 +114,7 @@ void drawCircle(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, int
     );
 }
 
-void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, float radiusX, float radiusY, int segments) {
+void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, const SDL_FPoint& body, int segments) {
     constexpr int MAX_SEGMENTS = 256;
 
     segments = std::clamp(segments, 3, MAX_SEGMENTS);
@@ -131,8 +131,8 @@ void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, float radiusX, f
 
     for (int i = 0; i <= segments; ++i) {
         points[i] = {
-            pos.x + cosAngle * radiusX,
-            pos.y + sinAngle * radiusY
+            pos.x + cosAngle * body.x,
+            pos.y + sinAngle * body.y
         };
 
         const float newCos = cosAngle * cosStep - sinAngle * sinStep;

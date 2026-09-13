@@ -30,7 +30,7 @@ void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon);
 // 2D Round Object
 void drawCircle(SDL_Renderer* renderer,const SDL_FPoint& pos, float radius, int segments = 64);
 
-void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, float radiusX, float radiusY, int segments = 64);
+void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, const SDL_FPoint& body, int segments = 64);
 
 void drawArc(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, float startAngle, float endAngle, int segments = 32);
 
