@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <SDL3/SDL.h>
 
 SpaceDefenders::SpaceDefenders(SDL_Window* window, SDL_Renderer* renderer) {
     this->window = window;
@@ -51,7 +52,6 @@ void SpaceDefenders::update() {
     const bool* keyboard = SDL_GetKeyboardState(nullptr);
 
     // Game
-
 }
 
 void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color color) {
@@ -103,11 +103,7 @@ void SpaceDefenders::render() {
 
     // Render Objects
 
-    drawCircle(renderer, earth.position.x, earth.position.y, earth.radius);
-
-    drawPolygon(renderer, {100.0f, 200.0f}, {{{0, 30.0f}, {15.0f, 0}, {-15.0f, 0}}});
-
-    drawComplexBody(renderer, {160.0f, 256.0f}, std::vector<Point>{{0, 30.0f}, {15.0f, 0},{20.0f, 5.0f} , {-15.0f, 0}});
+    drawCircle(renderer, earth.position, earth.radius);
 
     SDL_RenderPresent(renderer);
 }

@@ -122,7 +122,7 @@ void Launcher::render()
 
     for (int i = 0; i < static_cast<int>(games.size()); i++)
     {
-        float y = 140.0f + i * 35.0f;
+        float y = 140.0f + i * 30.0f;
 
         if (i == selectedGame)
         {

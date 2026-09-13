@@ -18,27 +18,26 @@ public:
 
 private:
     struct Planet {
-        Point position;
+        SDL_FPoint position;
         float radius;
         float gravityPull;
     };
 
     struct Player {
-        Point body[3];
+        Polygon polygon;
 
-        Point position;
-        Point velocity;
-        Point accelaration;
+        SDL_FPoint velocity;
+        SDL_FPoint accelaration;
 
         // More
     };
 
     struct Asteroid {
-        std::vector<Point> Body;
+        std::vector<SDL_FPoint> Body;
 
-        Point position;
-        Point velocity;
-        Point acceleration;
+        SDL_FPoint position;
+        SDL_FPoint velocity;
+        SDL_FPoint acceleration;
 
         int hp;
         int damage;
@@ -60,7 +59,7 @@ private:
     );
 
     // Game Objects
-    Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 50.0f, 0.1f};
+    Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 0.1f};
 
     bool running = true;
 };
