@@ -60,6 +60,24 @@ static SDL_Vertex createVertex(SDL_FPoint pos) {
     return v;
 }
 
+// Delta Time
+Timer::Timer()
+    : lastTime(std::chrono::steady_clock::now())
+{
+}
+
+float Timer::deltaTime()
+{
+    auto currentTime = std::chrono::steady_clock::now();
+
+    float dt =
+        std::chrono::duration<float>(currentTime - lastTime).count();
+
+    lastTime = currentTime;
+
+    return dt;
+}
+
 // 2D Polygon
 void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon) {
     if (polygon.body.size() < 3) {

@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -12,6 +13,17 @@
 int textWidth(const std::string& text, TTF_Font* font);
 
 int getDigits(int number);
+
+// Delta Time
+class Timer {
+    public:
+        Timer();
+
+        float deltaTime();
+
+    private:
+        std::chrono::steady_clock::time_point lastTime;
+};
 
 // Geometry Tools and Structs
 struct Polygon {

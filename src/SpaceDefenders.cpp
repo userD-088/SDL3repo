@@ -19,6 +19,8 @@ SpaceDefenders::~SpaceDefenders() {
 
 void SpaceDefenders::run() {
     while(running) {
+        float dt = timer.deltaTime();
+
         handleEvents();
         update();
         render();
@@ -104,6 +106,8 @@ void SpaceDefenders::render() {
     // Render Objects
 
     drawCircle(renderer, earth.position, earth.radius);
+
+    drawPolygon(renderer, player.polygon);
 
     SDL_RenderPresent(renderer);
 }

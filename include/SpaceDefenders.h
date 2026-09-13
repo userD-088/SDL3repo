@@ -43,6 +43,8 @@ private:
         int damage;
     };
 
+    Timer timer;
+
     void handleEvents();
     void update();
     void render();
@@ -60,6 +62,8 @@ private:
 
     // Game Objects
     Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 0.1f};
+
+    Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, {0, 0}, {0, 0}};
 
     bool running = true;
 };
