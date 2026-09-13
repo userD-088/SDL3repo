@@ -20,11 +20,7 @@ int getDigits(int number)
 }
 
 // Coordinate Conversions
-static SDL_FPoint toAbsolute(
-    const SDL_FPoint& origin,
-    const SDL_FPoint& value,
-    CoordinateMode mode
-) {
+static SDL_FPoint toAbsolute(const SDL_FPoint& origin, const SDL_FPoint& value, CoordinateMode mode) {
     switch (mode)
     {
         case CoordinateMode::Absolute:
