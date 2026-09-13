@@ -51,6 +51,15 @@ static SDL_FPoint toAbsolute(const SDL_FPoint& origin, const SDL_FPoint& value, 
     return value;
 }
 
+// Helperfunciton for the Creation of a Vertex with white color
+static SDL_Vertex createVertex(SDL_FPoint pos) {
+    SDL_Vertex v;
+    v.position = pos;
+    v.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    v.tex_coord = { 0.0f, 0.0f };
+    return v;
+}
+
 // 2D Polygon
 void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon) {
     if (polygon.body.size() < 3) {
@@ -72,6 +81,26 @@ void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon) {
     points.push_back(points[0]);
 
     SDL_RenderLines(renderer, points.data(), static_cast<int>(points.size()));
+}
+
+void drawFilledPolygon(SDL_Renderer* renderer, const Polygon& polygon) {
+    if (polygon.body.size() < 3) return;
+
+    const int polygonSize = static_cast<int>(polygon.body.size());
+    std::vector<SDL_Vertex> vertices;
+    vertices.reserve((polygonSize - 2) * 3);
+
+    for (int i = 1; i < polygonSize - 1; ++i) {
+        SDL_FPoint p0 = { polygon.pos.x + polygon.body[0].x, polygon.pos.y + polygon.body[0].y };
+        SDL_FPoint p1 = { polygon.pos.x + polygon.body[i].x, polygon.pos.y + polygon.body[i].y };
+        SDL_FPoint p2 = { polygon.pos.x + polygon.body[i+1].x, polygon.pos.y + polygon.body[i+1].y };
+
+        vertices.push_back(createVertex(p0));
+        vertices.push_back(createVertex(p1));
+        vertices.push_back(createVertex(p2));
+    }
+
+    SDL_RenderGeometry(renderer, nullptr, vertices.data(), static_cast<int>(vertices.size()), nullptr, 0);
 }
 
 // 2D Round Object
@@ -103,11 +132,32 @@ void drawCircle(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, int
         sinAngle = newSin;
     }
 
-    SDL_RenderLines(
-        renderer,
-        points,
-        segments + 1
-    );
+    SDL_RenderLines(renderer, points, segments + 1);
+}
+
+void drawFilledCircle(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, int segments) {
+    constexpr int MAX_SEGMENTS = 256;
+    segments = std::clamp(segments, 3, MAX_SEGMENTS);
+
+    std::vector<SDL_Vertex> vertices;
+    vertices.reserve(segments * 3);
+
+    const float angleStep = 2.0f * SDL_PI_F / segments;
+
+    for (int i = 0; i < segments; ++i) {
+        float angle1 = i * angleStep;
+        float angle2 = (i + 1) * angleStep;
+
+        SDL_FPoint p0 = pos;
+        SDL_FPoint p1 = { pos.x + SDL_cosf(angle1) * radius, pos.y + SDL_sinf(angle1) * radius };
+        SDL_FPoint p2 = { pos.x + SDL_cosf(angle2) * radius, pos.y + SDL_sinf(angle2) * radius };
+
+        vertices.push_back(createVertex(p0));
+        vertices.push_back(createVertex(p1));
+        vertices.push_back(createVertex(p2));
+    }
+
+    SDL_RenderGeometry(renderer, nullptr, vertices.data(), static_cast<int>(vertices.size()), nullptr, 0);
 }
 
 void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, const SDL_FPoint& body, int segments) {
@@ -142,6 +192,37 @@ void drawEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, const SDL_FPoint
     SDL_RenderLines(renderer, points, segments + 1);
 }
 
+void drawFilledEllipse(SDL_Renderer* renderer, const SDL_FPoint& pos, const SDL_FPoint& body, int segments) {
+    constexpr int MAX_SEGMENTS = 256;
+    segments = std::clamp(segments, 3, MAX_SEGMENTS);
+
+    std::vector<SDL_Vertex> vertices;
+    vertices.reserve(segments * 3);
+
+    const float angleStep = 2.0f * SDL_PI_F / segments;
+
+    for (int i = 0; i < segments; ++i) {
+        const float angle1 = i * angleStep;
+        const float angle2 = (i + 1) * angleStep;
+
+        const SDL_FPoint p0 = pos;
+        const SDL_FPoint p1 = {
+            pos.x + SDL_cosf(angle1) * body.x,
+            pos.y + SDL_sinf(angle1) * body.y
+        };
+        const SDL_FPoint p2 = {
+            pos.x + SDL_cosf(angle2) * body.x,
+            pos.y + SDL_sinf(angle2) * body.y
+        };
+
+        vertices.push_back(createVertex(p0));
+        vertices.push_back(createVertex(p1));
+        vertices.push_back(createVertex(p2));
+    }
+
+    SDL_RenderGeometry(renderer, nullptr, vertices.data(), static_cast<int>(vertices.size()), nullptr, 0);
+}
+
 void drawArc(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, float startAngle, float endAngle, int segments) {
     constexpr int MAX_SEGMENTS = 256;
 
@@ -172,6 +253,37 @@ void drawArc(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, float 
     }
 
     SDL_RenderLines(renderer, points, segments + 1);
+}
+
+void drawSector(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, float startAngle, float endAngle, int segments) {
+    constexpr int MAX_SEGMENTS = 256;
+    segments = std::clamp(segments, 2, MAX_SEGMENTS);
+
+    std::vector<SDL_Vertex> vertices;
+    vertices.reserve(segments * 3);
+
+    const float angleStep = (endAngle - startAngle) / segments;
+
+    for (int i = 0; i < segments; ++i) {
+        const float angle1 = startAngle + i * angleStep;
+        const float angle2 = startAngle + (i + 1) * angleStep;
+
+        const SDL_FPoint p0 = pos;
+        const SDL_FPoint p1 = {
+            pos.x + SDL_cosf(angle1) * radius,
+            pos.y + SDL_sinf(angle1) * radius
+        };
+        const SDL_FPoint p2 = {
+            pos.x + SDL_cosf(angle2) * radius,
+            pos.y + SDL_sinf(angle2) * radius
+        };
+
+        vertices.push_back(createVertex(p0));
+        vertices.push_back(createVertex(p1));
+        vertices.push_back(createVertex(p2));
+    }
+
+    SDL_RenderGeometry(renderer, nullptr, vertices.data(), static_cast<int>(vertices.size()), nullptr, 0);
 }
 
 // Special 1D Objects
@@ -208,6 +320,11 @@ void drawCurve(SDL_Renderer* renderer, const SDL_FPoint& start, const SDL_FPoint
 void drawArrow(SDL_Renderer* renderer, const SDL_FPoint& start, const SDL_FPoint& value, CoordinateMode mode, float headLength, float headAngle) {
     // Convert input into absolute end position
     const SDL_FPoint end = toAbsolute(start, value, mode);
+
+    if (start.x == end.x && start.y == end.y) {
+        std::cout << "Invalid Arrow Length" << std::endl;
+        return;
+    }
 
     // Direction vector
     const SDL_FPoint direction = {
