@@ -38,7 +38,7 @@ enum class CoordinateMode {
 };
 
 // 2D Polygon
-void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon);
+void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon, float direction = 0);
 void drawFilledPolygon(SDL_Renderer* renderer, const Polygon& polygon);
 
 // 2D Round Object

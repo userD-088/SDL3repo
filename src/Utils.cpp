@@ -79,21 +79,26 @@ float Timer::deltaTime()
 }
 
 // 2D Polygon
-void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon) {
+#include <cmath>
+
+void drawPolygon(SDL_Renderer* renderer, const Polygon& polygon, float direction) {
     if (polygon.body.size() < 3) {
         std::cout << "Invalid Polygon size: too small" << std::endl;
         return;
     }
 
     std::vector<SDL_FPoint> points;
-
     points.reserve(polygon.body.size() + 1);
 
+    const float cosA = std::cos(direction);
+    const float sinA = std::sin(direction);
+
     for (const SDL_FPoint& p : polygon.body) {
-        points.push_back({
-            polygon.pos.x + p.x,
-            polygon.pos.y + p.y
-        });
+
+        float rotatedX = p.x * cosA - p.y * sinA;
+        float rotatedY = p.x * sinA + p.y * cosA;
+
+        points.push_back({ polygon.pos.x + rotatedX, polygon.pos.y + rotatedY });
     }
 
     points.push_back(points[0]);

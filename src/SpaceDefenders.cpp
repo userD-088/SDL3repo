@@ -49,18 +49,34 @@ void SpaceDefenders::handleEvents() {
     }
 }
 
-void SpaceDefenders::update() {
-    // Get Key
+void SpaceDefenders::update()
+{
     const bool* keyboard = SDL_GetKeyboardState(nullptr);
 
-    // Game
+    if (keyboard[SDL_SCANCODE_LEFT])
+    {
+        player.direction -= player.rotationSpeed * dt;
+    }
 
-    // Update Player
-    player.velocity.x += player.accelaration.x;
-    player.velocity.y += player.accelaration.y;
+    if (keyboard[SDL_SCANCODE_RIGHT])
+    {
+        player.direction += player.rotationSpeed * dt;
+    }
 
-    player.polygon.pos.x += player.velocity.x;
-    player.polygon.pos.y += player.velocity.y;
+    player.accelaration = {0.0f, 0.0f};
+
+    if (keyboard[SDL_SCANCODE_UP])
+    {
+        player.accelaration.x = std::cos(player.direction) * player.thrust;
+
+        player.accelaration.y = std::sin(player.direction) * player.thrust;
+    }
+
+    player.velocity.x += (player.accelaration.x + SpaceDefenders::calcGravPullEarth(player.polygon.pos, earth).x) * dt;
+    player.velocity.y += (player.accelaration.y + SpaceDefenders::calcGravPullEarth(player.polygon.pos, earth).y) * dt;
+
+    player.polygon.pos.x += player.velocity.x * dt;
+    player.polygon.pos.y += player.velocity.y * dt;
 }
 
 void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color color) {
@@ -99,7 +115,28 @@ void SpaceDefenders::render() {
 
     drawCircle(renderer, earth.position, earth.radius);
 
-    drawPolygon(renderer, player.polygon);
+    drawPolygon(renderer, player.polygon, player.direction);
 
     SDL_RenderPresent(renderer);
+}
+
+SDL_FPoint SpaceDefenders::calcGravPullEarth(const SDL_FPoint& pos, const Planet& earth) {
+    float dx = earth.position.x - pos.x;
+    float dy = earth.position.y - pos.y;
+
+    float g;
+
+    float r_squared = (dx * dx + dy * dy);
+    float r = std::sqrt(r_squared);
+    
+    if (r_squared < 3025.0f) {
+        return {0, 0};
+    }
+
+    float r_scaledSquared = r_squared * 8.0E8f;
+    g = (gravConstant * earth.mass) / r_scaledSquared;
+    
+    float angle = std::atan2(dy, dx);
+
+    return { std::cos(angle) * g, std::sin(angle) * g };
 }

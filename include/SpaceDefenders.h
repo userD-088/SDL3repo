@@ -4,6 +4,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "Utils.h"
 #include "const.h"
@@ -20,15 +21,19 @@ private:
     struct Planet {
         SDL_FPoint position;
         float radius;
-        float gravityPull;
+        float mass;
     };
 
     struct Player {
         Polygon polygon;
+
         float direction;
+        float rotationSpeed;
 
         SDL_FPoint velocity;
         SDL_FPoint accelaration;
+
+        float thrust = 100.0f;
 
         // More
     };
@@ -43,6 +48,8 @@ private:
         int hp;
         int damage;
     };
+
+    SDL_FPoint calcGravPullEarth(const SDL_FPoint& pos, const Planet& earth);
 
     Timer timer;
     float dt; 
@@ -62,10 +69,12 @@ private:
         SDL_Color color
     );
 
-    // Game Objects
-    Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 0.1f};
+    // Game Objects and Variables
+    float gravConstant = 6.674E-11f;
 
-    Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, 0, {0, 0}, {0, 0}};
+    Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 5.9722E24f};
+
+    Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, 0, SDL_PI_F, {0, 0}, {0, 0}, 100.0f};
 
     bool running = true;
 };
