@@ -19,7 +19,7 @@ SpaceDefenders::~SpaceDefenders() {
 
 void SpaceDefenders::run() {
     while(running) {
-        float dt = timer.deltaTime();
+        dt = timer.deltaTime();
 
         handleEvents();
         update();
@@ -54,23 +54,21 @@ void SpaceDefenders::update() {
     const bool* keyboard = SDL_GetKeyboardState(nullptr);
 
     // Game
+
+    // Update Player
+    player.velocity.x += player.accelaration.x;
+    player.velocity.y += player.accelaration.y;
+
+    player.polygon.pos.x += player.velocity.x;
+    player.polygon.pos.y += player.velocity.y;
 }
 
 void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color color) {
-    SDL_Surface* surface = TTF_RenderText_Blended(
-        font,
-        text,
-        0,
-        color
-    );
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text, 0, color);
 
-    if (!surface)
-        return;
+    if (!surface) return;
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(
-        renderer,
-        surface
-    );
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     if (!texture)
     {
@@ -79,18 +77,12 @@ void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color co
     }
 
     SDL_FRect dst{
-        x,
-        y,
+        x, y,
         static_cast<float>(surface->w),
         static_cast<float>(surface->h)
     };
 
-    SDL_RenderTexture(
-        renderer,
-        texture,
-        nullptr,
-        &dst
-    );
+    SDL_RenderTexture(renderer, texture, nullptr, &dst);
 
     SDL_DestroyTexture(texture);
     SDL_DestroySurface(surface);

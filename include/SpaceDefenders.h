@@ -25,6 +25,7 @@ private:
 
     struct Player {
         Polygon polygon;
+        float direction;
 
         SDL_FPoint velocity;
         SDL_FPoint accelaration;
@@ -44,6 +45,7 @@ private:
     };
 
     Timer timer;
+    float dt; 
 
     void handleEvents();
     void update();
@@ -63,7 +65,7 @@ private:
     // Game Objects
     Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 0.1f};
 
-    Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, {0, 0}, {0, 0}};
+    Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, 0, {0, 0}, {0, 0}};
 
     bool running = true;
 };
