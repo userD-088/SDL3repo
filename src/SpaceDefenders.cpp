@@ -51,6 +51,38 @@ void SpaceDefenders::handleEvents() {
 
 void SpaceDefenders::update()
 {
+    // Update Lasers
+    for (auto it = lasers.begin(); it != lasers.end(); ) {
+        it->x = it->x + laserSpeed * cosf(it->angle) * dt;
+        it->y = it->y + laserSpeed * sinf(it->angle) * dt;
+
+        float tipX = it->x + it->len * cosf(it->angle);
+        float tipY = it->y + it->len * sin(it->angle);
+
+        it->lifetime++;
+        
+        bool eraseFlag = false;
+        eraseFlag = it->x < 0 || it->x > SCREEN_WIDTH || it->y < 0 || it->y > SCREEN_HEIGHT;
+        eraseFlag = sqrt((tipX - earth.position.x)*(tipX - earth.position.x) + (tipY - earth.position.y)*(tipY - earth.position.y)) < 55.0f;
+
+        if (eraseFlag) {
+            it = lasers.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    // Check if inside of the Planet
+    if(isPlayerPlanetIntersect(player, earth)) {
+        player.polygon.pos = {100.0f, 100.0f};
+        player.velocity = {0.0f, 0.0f};
+        player.accelaration = {0.0f, 0.0f};
+        
+        player.hp--;
+    }
+
+    // Inputs
     const bool* keyboard = SDL_GetKeyboardState(nullptr);
 
     if (keyboard[SDL_SCANCODE_LEFT])
@@ -77,31 +109,13 @@ void SpaceDefenders::update()
 
     player.polygon.pos.x += player.velocity.x * dt;
     player.polygon.pos.y += player.velocity.y * dt;
-}
 
-void SpaceDefenders::renderText(const char* text, float x, float y, SDL_Color color) {
-    SDL_Surface* surface = TTF_RenderText_Blended(font, text, 0, color);
-
-    if (!surface) return;
-
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    if (!texture)
+    if (keyboard[SDL_SCANCODE_DOWN] ) 
     {
-        SDL_DestroySurface(surface);
-        return;
+        if (lasers.empty() || lasers.back().lifetime > 20) {
+            lasers.push_back({player.polygon.pos.x + 36.0f * cosf(player.direction), player.polygon.pos.y + 36.0f * sinf(player.direction), player.direction, 12.0f, 0});
+        }
     }
-
-    SDL_FRect dst{
-        x, y,
-        static_cast<float>(surface->w),
-        static_cast<float>(surface->h)
-    };
-
-    SDL_RenderTexture(renderer, texture, nullptr, &dst);
-
-    SDL_DestroyTexture(texture);
-    SDL_DestroySurface(surface);
 }
 
 void SpaceDefenders::render() {
@@ -112,11 +126,28 @@ void SpaceDefenders::render() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     // Render Objects
+    for (auto& laser : lasers) {
+        DrawPolarLine(renderer, laser.x, laser.y, laser.angle, laser.len);
+    }
 
     drawCircle(renderer, earth.position, earth.radius);
 
     drawPolygon(renderer, player.polygon, player.direction);
 
+    // Render Texts
+    std::string textPlayerX = std::to_string(player.polygon.pos.x);
+    renderText(renderer, font, textPlayerX.c_str(), 10, 10, white, 0.3f);
+
+    std::string textPlayerY = std::to_string(player.polygon.pos.y);
+    renderText(renderer, font, textPlayerY.c_str(), 10, 30, white, 0.3f);
+
+    std::string hearts;
+    if (player.hp > 0) {
+        for (int i = 0; i < player.hp; ++i) { hearts += "♥ "; }
+        renderText(renderer, font, hearts.c_str(), 680, 20, white, 0.8f);
+    }
+
+    // Render all
     SDL_RenderPresent(renderer);
 }
 
@@ -139,4 +170,35 @@ SDL_FPoint SpaceDefenders::calcGravPullEarth(const SDL_FPoint& pos, const Planet
     float angle = std::atan2(dy, dx);
 
     return { std::cos(angle) * g, std::sin(angle) * g };
+}
+
+bool SpaceDefenders::isPlayerPlanetIntersect(const Player& player, const Planet& planet)
+{
+    const float radiusSquared = planet.radius * planet.radius;
+
+    auto isInsidePlanet = [&](const SDL_FPoint& point)
+    {
+        float dx = point.x - planet.position.x;
+        float dy = point.y - planet.position.y;
+
+        return dx * dx + dy * dy < radiusSquared;
+    };
+
+    if (isInsidePlanet(player.polygon.pos)) return true;
+
+    for (const SDL_FPoint& point : player.polygon.body)
+    {
+        float rotatedX = point.x * std::cos(player.direction) - point.y * std::sin(player.direction);
+
+        float rotatedY = point.x * std::sin(player.direction) + point.y * std::cos(player.direction);
+
+        SDL_FPoint worldPoint = {
+            player.polygon.pos.x + rotatedX,
+            player.polygon.pos.y + rotatedY
+        };
+
+        if (isInsidePlanet(worldPoint)) return true;
+    }
+
+    return false;
 }

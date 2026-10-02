@@ -18,7 +18,6 @@ private:
     void handleEvents();
     void update();
     void render();
-    void renderText(const char* text, float x, float y, SDL_Color color);
 
     SDL_Window* window;
     SDL_Renderer* renderer;

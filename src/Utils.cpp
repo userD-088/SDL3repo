@@ -1,14 +1,14 @@
 #include "Utils.h"
 
 // Utility
-int textWidth(const std::string& text, TTF_Font* font)
+int textWidth(const std::string& text, TTF_Font* font, float textSize)
 {
     int width;
     int height;
 
     TTF_GetStringSize(font, text.c_str(), 0, &width, &height);
 
-    return width;
+    return static_cast<int>(width * textSize);
 }
 
 int getDigits(int number)
@@ -17,6 +17,44 @@ int getDigits(int number)
         return 1;
 
     return static_cast<int>(std::log10(std::abs(number))) + 1;
+}
+
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, float x, float y, SDL_Color color, float textSize)
+{
+    if (!font)
+    {
+        return;
+    }
+
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text, 0, color);
+
+    if (!surface)
+    {
+        return;
+    }
+
+    SDL_Texture* texture =
+        SDL_CreateTextureFromSurface(renderer, surface);
+
+    if (!texture)
+    {
+        SDL_DestroySurface(surface);
+        return;
+    }
+
+    SDL_FRect destination;
+
+    destination.x = x;
+    destination.y = y;
+
+    destination.w = static_cast<float>(surface->w) * textSize;
+
+    destination.h = static_cast<float>(surface->h) * textSize;
+
+    SDL_RenderTexture(renderer, texture, nullptr, &destination);
+
+    SDL_DestroyTexture(texture);
+    SDL_DestroySurface(surface);
 }
 
 // Coordinate Conversions
@@ -378,4 +416,12 @@ void drawArrow(SDL_Renderer* renderer, const SDL_FPoint& start, const SDL_FPoint
     SDL_RenderLine(renderer, end.x, end.y, left.x, left.y);
 
     SDL_RenderLine(renderer, end.x, end.y, right.x, right.y);
+}
+
+//Line with polar coordinates
+void DrawPolarLine(SDL_Renderer* renderer, float x1, float y1, float angle, float length) {
+    float x2 = x1 + length * cosf(angle);
+    float y2 = y1 + length * sinf(angle);
+
+    SDL_RenderLine(renderer, x1, y1, x2, y2);
 }

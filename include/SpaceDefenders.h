@@ -35,6 +35,7 @@ private:
 
         float thrust = 100.0f;
 
+        int hp = 3;
         // More
     };
 
@@ -49,10 +50,26 @@ private:
         int damage;
     };
 
+    struct Laser {
+        float x;
+        float y;
+        float angle;
+        float len;
+        int lifetime;
+    };
+
+    // Speed of every laser
+    float laserSpeed = 365.0f;
+
     SDL_FPoint calcGravPullEarth(const SDL_FPoint& pos, const Planet& earth);
+
+    bool isPlayerPlanetIntersect(const Player& player, const Planet& planet);
 
     Timer timer;
     float dt; 
+
+    // Colors
+    SDL_Color white = { 255, 255, 255, 255 };
 
     void handleEvents();
     void update();
@@ -62,19 +79,14 @@ private:
     SDL_Renderer* renderer;
     TTF_Font* font;
 
-    void renderText(
-        const char* text,
-        float x,
-        float y,
-        SDL_Color color
-    );
-
     // Game Objects and Variables
     float gravConstant = 6.674E-11f;
 
     Planet earth = {{SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f}, 55.0f, 5.9722E24f};
 
     Player player = {{{100.0f, 100.0f}, {{0, -16.0f},{0, 16.0f}, {36.0f, 0}}}, 0, SDL_PI_F, {0, 0}, {0, 0}, 100.0f};
+
+    std::vector<Laser> lasers;
 
     bool running = true;
 };

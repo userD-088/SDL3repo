@@ -10,9 +10,11 @@
 #include <cmath>
 
 // Utility
-int textWidth(const std::string& text, TTF_Font* font);
+int textWidth(const std::string& text, TTF_Font* font, float textSize = 1.0f);
 
 int getDigits(int number);
+
+void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, float x, float y, SDL_Color color, float textSize = 1.0f);
 
 // Delta Time
 class Timer {
@@ -55,3 +57,5 @@ void drawSector(SDL_Renderer* renderer, const SDL_FPoint& pos, float radius, flo
 void drawCurve(SDL_Renderer* renderer, const SDL_FPoint& start, const SDL_FPoint& control, const SDL_FPoint& end, CoordinateMode mode, int segments = 32);
 
 void drawArrow(SDL_Renderer* renderer, const SDL_FPoint& start, const SDL_FPoint& value, CoordinateMode mode, float headLength = 10.0f, float headAngle = SDL_PI_F / 6.0f);
+
+void DrawPolarLine(SDL_Renderer* renderer, float x1, float y1, float angle, float length);

@@ -106,19 +106,9 @@ void Launcher::render()
     SDL_Color white = {255, 255, 255, 255};
     SDL_Color selected = {50, 200, 255, 255};
 
-    renderText(
-        "GAME LAUNCHER",
-        SCREEN_WIDTH / 2 - textWidth("GAME LAUNCHER", font) / 2,
-        70,
-        white
-    );
+    renderText(renderer, font, "GAME LAUNCHER", SCREEN_WIDTH / 2 - textWidth("GAME LAUNCHER", font) / 2, 70, white);
 
-    renderText(
-        "Game List:",
-        50,
-        100,
-        white
-    );
+    renderText(renderer, font, "Game List:", 50, 100, white);
 
     for (int i = 0; i < static_cast<int>(games.size()); i++)
     {
@@ -128,89 +118,20 @@ void Launcher::render()
         {
             std::string text = "> " + std::to_string(i+1) + " " + games[i].name;
 
-            renderText(
-                text.c_str(),
-                80,
-                y,
-                selected
-            );
+            renderText(renderer, font, text.c_str(), 80, y, selected);
         }
         else
         {
             std::string gameText = std::to_string(i+1) + " " + games[i].name;
 
-            renderText(
-                gameText.c_str(),
-                100,
-                y,
-                white
-            );
+            renderText(renderer, font, gameText.c_str(), 100, y, white);
         }
     }
 
     SDL_Color help = {150, 150, 150, 255};
 
-    renderText(
-        "UP / DOWN = Select    ENTER = Start    ESC = Exit",
-        SCREEN_WIDTH / 2 - textWidth("UP / DOWN = Select    ENTER = Start    ESC = Exit", font) / 2,
-        530,
-        help
-    );
+    renderText(renderer, font, "UP / DOWN = Select    ENTER = Start    ESC = Exit", 
+        SCREEN_WIDTH / 2 - textWidth("UP / DOWN = Select    ENTER = Start    ESC = Exit", font) / 2, 530, help);
 
     SDL_RenderPresent(renderer);
-}
-
-void Launcher::renderText(
-    const char* text,
-    float x,
-    float y,
-    SDL_Color color
-)
-{
-    if (!font)
-    {
-        return;
-    }
-
-    SDL_Surface* surface =
-        TTF_RenderText_Blended(
-            font,
-            text,
-            0,
-            color
-        );
-
-    if (!surface)
-    {
-        return;
-    }
-
-    SDL_Texture* texture =
-        SDL_CreateTextureFromSurface(
-            renderer,
-            surface
-        );
-
-    if (!texture)
-    {
-        SDL_DestroySurface(surface);
-        return;
-    }
-
-    SDL_FRect destination;
-
-    destination.x = x;
-    destination.y = y;
-    destination.w = static_cast<float>(surface->w);
-    destination.h = static_cast<float>(surface->h);
-
-    SDL_RenderTexture(
-        renderer,
-        texture,
-        nullptr,
-        &destination
-    );
-
-    SDL_DestroyTexture(texture);
-    SDL_DestroySurface(surface);
 }
