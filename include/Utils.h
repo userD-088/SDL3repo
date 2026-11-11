@@ -10,11 +10,23 @@
 #include <cmath>
 
 // Utility
+// Opens FONT_PATH and falls back to common system fonts (Linux / macOS) if it is missing
+TTF_Font* openFont(float size);
+
 int textWidth(const std::string& text, TTF_Font* font, float textSize = 1.0f);
 
 int getDigits(int number);
 
 void renderText(SDL_Renderer* renderer, TTF_Font* font, const char* text, float x, float y, SDL_Color color, float textSize = 1.0f);
+void renderTextCentered(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, float centerX, float y, SDL_Color color, float textSize = 1.0f);
+
+// Highscores (stored in the SDL preference folder)
+int loadHighscore(const std::string& game);
+void saveHighscore(const std::string& game, int score);
+
+// Random helpers
+float randomFloat(float min, float max);
+int randomInt(int min, int max);
 
 // Delta Time
 class Timer {

@@ -1,14 +1,94 @@
 #include "Utils.h"
+#include "const.h"
+
+#include <random>
+#include <fstream>
 
 // Utility
 int textWidth(const std::string& text, TTF_Font* font, float textSize)
 {
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
+
+    if (!font) return 0;
 
     TTF_GetStringSize(font, text.c_str(), 0, &width, &height);
 
     return static_cast<int>(width * textSize);
+}
+
+TTF_Font* openFont(float size)
+{
+    const char* candidates[] = {
+        FONT_PATH,
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/TTF/DejaVuSans.ttf",
+        "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/Library/Fonts/Arial.ttf"
+    };
+
+    for (const char* path : candidates)
+    {
+        TTF_Font* font = TTF_OpenFont(path, size);
+
+        if (font)
+        {
+            return font;
+        }
+    }
+
+    std::cout << "Font Error: " << SDL_GetError() << '\n';
+    return nullptr;
+}
+
+void renderTextCentered(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, float centerX, float y, SDL_Color color, float textSize)
+{
+    if (!font) return;
+
+    renderText(renderer, font, text.c_str(), centerX - textWidth(text, font, textSize) / 2.0f, y, color, textSize);
+}
+
+static std::string highscorePath(const std::string& game)
+{
+    char* prefPath = SDL_GetPrefPath("SDL3repo", "GameLauncher");
+
+    std::string path = prefPath ? prefPath : "";
+    SDL_free(prefPath);
+
+    return path + game + "_highscore.txt";
+}
+
+int loadHighscore(const std::string& game)
+{
+    std::ifstream file(highscorePath(game));
+    int score = 0;
+
+    if (file >> score) return score;
+
+    return 0;
+}
+
+void saveHighscore(const std::string& game, int score)
+{
+    std::ofstream file(highscorePath(game));
+
+    if (file) file << score;
+}
+
+float randomFloat(float min, float max)
+{
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> dist(min, max);
+    return dist(rng);
+}
+
+int randomInt(int min, int max)
+{
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> dist(min, max);
+    return dist(rng);
 }
 
 int getDigits(int number)

@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "Pong.h"
 #include "SpaceDefenders.h"
+#include "VectorRush.h"
 
 #include <iostream>
 
@@ -15,31 +16,57 @@ Launcher::Launcher(SDL_Window* window, SDL_Renderer* renderer)
       running(true)
 {
     games = {
-        {"Pong"},
-        {"Space Defenders"},
-        {"..."}
+        {"Pong",
+         "The classic. Play against the CPU or a friend. First to 7 wins.",
+         "W/S  -  UP/DOWN  -  P = Pause"},
+        {"Space Defenders",
+         "Defend Earth from asteroid waves. Mind the gravity!",
+         "LEFT/RIGHT = Turn  UP = Thrust  SPACE = Shoot"},
+        {"Vector Rush 3D",
+         "Fly through a wireframe world. Rings, crystals, drones and bosses.",
+         "WASD/Arrows = Fly  SPACE = Shoot  SHIFT = Boost"}
     };
 
-    font = TTF_OpenFont(FONT_PATH, 24);
+    font = openFont(24);
 
-    if (!font)
+    for (int i = 0; i < 90; ++i)
     {
-        std::cout << "Font Error: "
-                  << SDL_GetError()
-                  << '\n';
+        stars.push_back({randomFloat(0, SCREEN_WIDTH), randomFloat(0, SCREEN_HEIGHT), randomFloat(10.0f, 60.0f)});
     }
+}
+
+Launcher::~Launcher()
+{
+    if (font) TTF_CloseFont(font);
 }
 
 void Launcher::run()
 {
     while (running)
     {
+        dt = timer.deltaTime();
+
         handleEvents();
         update();
         render();
 
         SDL_Delay(16);
     }
+}
+
+void Launcher::startGame(int index)
+{
+    std::cout << "Selected: " << index + 1 << " " << games[index].name << '\n';
+
+    if (index == 0) { Pong pong(window, renderer); pong.run(); }
+    if (index == 1) { SpaceDefenders spaceDefenders(window, renderer); spaceDefenders.run(); }
+    if (index == 2) { VectorRush vectorRush(window, renderer); vectorRush.run(); }
+
+    // Games leave blend mode / draw color in any state -> reset
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+
+    // Skip the long frame of the game session
+    timer.deltaTime();
 }
 
 void Launcher::handleEvents()
@@ -53,7 +80,7 @@ void Launcher::handleEvents()
             running = false;
         }
 
-        if (event.type == SDL_EVENT_KEY_DOWN)
+        if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat)
         {
             switch (event.key.key)
             {
@@ -62,6 +89,7 @@ void Launcher::handleEvents()
                     break;
 
                 case SDLK_DOWN:
+                case SDLK_S:
                     selectedGame++;
 
                     if (selectedGame >= static_cast<int>(games.size()))
@@ -72,6 +100,7 @@ void Launcher::handleEvents()
                     break;
 
                 case SDLK_UP:
+                case SDLK_W:
                     selectedGame--;
 
                     if (selectedGame < 0)
@@ -82,11 +111,26 @@ void Launcher::handleEvents()
                     break;
 
                 case SDLK_RETURN:
-                    std::cout << "Selected: " << selectedGame + 1 << " " << games[selectedGame].name << '\n';
+                case SDLK_SPACE:
+                    startGame(selectedGame);
+                    break;
 
-                    if (games[selectedGame].name == "Pong") { Pong pong(window, renderer); pong.run(); }
-                    if (games[selectedGame].name == "Space Defenders") { SpaceDefenders spaceDefenders(window, renderer); spaceDefenders.run(); }
+                case SDLK_1:
+                case SDLK_2:
+                case SDLK_3:
+                {
+                    int index = static_cast<int>(event.key.key - SDLK_1);
 
+                    if (index < static_cast<int>(games.size()))
+                    {
+                        selectedGame = index;
+                        startGame(selectedGame);
+                    }
+
+                    break;
+                }
+
+                default:
                     break;
             }
         }
@@ -95,27 +139,59 @@ void Launcher::handleEvents()
 
 void Launcher::update()
 {
-    // Later: animations, mouse, start game
+    time += dt;
+
+    // Slowly drifting stars in the background
+    for (Star& star : stars)
+    {
+        star.y += star.speed * dt;
+
+        if (star.y > SCREEN_HEIGHT)
+        {
+            star.y = 0;
+            star.x = randomFloat(0, SCREEN_WIDTH);
+        }
+    }
 }
 
 void Launcher::render()
 {
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
     SDL_RenderClear(renderer);
 
+    // Stars
+    for (const Star& star : stars)
+    {
+        Uint8 brightness = static_cast<Uint8>(40 + star.speed * 2.0f);
+        SDL_SetRenderDrawColor(renderer, brightness, brightness, brightness, 255);
+        SDL_RenderPoint(renderer, star.x, star.y);
+    }
+
     SDL_Color white = {255, 255, 255, 255};
     SDL_Color selected = {50, 200, 255, 255};
+    SDL_Color help = {150, 150, 150, 255};
 
-    renderText(renderer, font, "GAME LAUNCHER", SCREEN_WIDTH / 2 - textWidth("GAME LAUNCHER", font) / 2, 70, white);
+    renderTextCentered(renderer, font, "GAME LAUNCHER", SCREEN_WIDTH / 2.0f, 50, white, 1.4f);
 
-    renderText(renderer, font, "Game List:", 50, 100, white);
+    // Underline
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderLine(renderer, 250, 92, 550, 92);
+
+    renderText(renderer, font, "Game List:", 50, 120, white);
 
     for (int i = 0; i < static_cast<int>(games.size()); i++)
     {
-        float y = 140.0f + i * 30.0f;
+        float y = 165.0f + i * 40.0f;
 
         if (i == selectedGame)
         {
+            // Pulsing selection frame
+            float pulse = 0.5f + 0.5f * SDL_sinf(time * 4.0f);
+            SDL_SetRenderDrawColor(renderer, 50, 200, 255, static_cast<Uint8>(80 + pulse * 120));
+            SDL_FRect frame = {70, y - 4, 660, 36};
+            SDL_RenderRect(renderer, &frame);
+
             std::string text = "> " + std::to_string(i+1) + " " + games[i].name;
 
             renderText(renderer, font, text.c_str(), 80, y, selected);
@@ -128,10 +204,17 @@ void Launcher::render()
         }
     }
 
-    SDL_Color help = {150, 150, 150, 255};
+    // Info box for the selected game
+    SDL_FRect infoBox = {50, 330, 700, 140};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderRect(renderer, &infoBox);
 
-    renderText(renderer, font, "UP / DOWN = Select    ENTER = Start    ESC = Exit", 
-        SCREEN_WIDTH / 2 - textWidth("UP / DOWN = Select    ENTER = Start    ESC = Exit", font) / 2, 530, help);
+    const GameInfo& game = games[selectedGame];
+    renderText(renderer, font, game.name.c_str(), 70, 345, selected);
+    renderText(renderer, font, game.description.c_str(), 70, 385, white, 0.75f);
+    renderText(renderer, font, game.controls.c_str(), 70, 425, help, 0.75f);
+
+    renderTextCentered(renderer, font, "UP / DOWN = Select    ENTER = Start    ESC = Exit", SCREEN_WIDTH / 2.0f, 530, help);
 
     SDL_RenderPresent(renderer);
 }

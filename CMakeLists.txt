@@ -15,6 +15,7 @@ add_executable(SDL3repo
     src/Utils.cpp
     src/Pong.cpp
     src/SpaceDefenders.cpp
+    src/VectorRush.cpp
 )
 
 target_include_directories(SDL3repo PRIVATE
